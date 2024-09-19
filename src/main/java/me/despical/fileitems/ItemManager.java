@@ -7,13 +7,14 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
@@ -26,6 +27,8 @@ import static me.despical.fileitems.ItemOption.*;
  * Created at 18.09.2024
  */
 public final class ItemManager {
+
+	private Consumer<ItemBuilder> builderEditor;
 
 	private final JavaPlugin plugin;
 	private final boolean oraxenEnabled;
@@ -51,6 +54,10 @@ public final class ItemManager {
 		this.customKeys.put(key, keyMapper);
 	}
 
+	public void editItemBuilder(Consumer<ItemBuilder> builderConsumer) {
+		this.builderEditor = builderConsumer;
+	}
+
 	public void registerItems(@NotNull String fileName, @NotNull String path) {
 		FileConfiguration config = ConfigUtils.getConfig(plugin, fileName);
 		ConfigurationSection section = config.getConfigurationSection(path);
@@ -67,24 +74,26 @@ public final class ItemManager {
 				continue;
 			}
 
-			ItemStack itemStack = this.createItemBuilder(materialName)
-					.name(section.getString(NAME.getFormattedPath(key)))
-					.amount(section.getInt(AMOUNT.getFormattedPath(key), 1))
-					.durability((short) section.getInt(DURABILITY.getFormattedPath(key)))
-					.data((byte) section.getInt(DATA.getFormattedPath(key)))
-					.unbreakable(section.getBoolean(UNBREAKABLE.getFormattedPath(key)))
-					.glow(section.getBoolean(GLOW.getFormattedPath(key)))
-					.hideToolTip(section.getBoolean(HIDE_TOOL_TIPS.getFormattedPath(key)))
-					.lore(section.getStringList(LORE.getFormattedPath(key)))
-					.flag(section.getStringList(ITEM_FLAGS.getFormattedPath(key))
-							.stream()
-							.map(ItemFlag::valueOf)
-							.toArray(ItemFlag[]::new))
-					.build();
+			ItemBuilder itemBuilder = this.createItemBuilder(materialName)
+				.name(section.getString(NAME.getFormattedPath(key)))
+				.amount(section.getInt(AMOUNT.getFormattedPath(key), 1))
+				.durability((short) section.getInt(DURABILITY.getFormattedPath(key)))
+				.data((byte) section.getInt(DATA.getFormattedPath(key)))
+				.unbreakable(section.getBoolean(UNBREAKABLE.getFormattedPath(key)))
+				.glow(section.getBoolean(GLOW.getFormattedPath(key)))
+				.hideToolTip(section.getBoolean(HIDE_TOOL_TIPS.getFormattedPath(key)))
+				.lore(section.getStringList(LORE.getFormattedPath(key)))
+				.flag(section.getStringList(ITEM_FLAGS.getFormattedPath(key))
+					.stream()
+					.map(ItemFlag::valueOf)
+					.toArray(ItemFlag[]::new));
 
-			SpecialItem item = new SpecialItem(itemStack);
+			Optional.ofNullable(this.builderEditor).ifPresent(consumer -> consumer.accept(itemBuilder));
 
-			custom_keys: {
+			SpecialItem item = new SpecialItem(itemBuilder.build());
+
+			custom_keys:
+			{
 				if (CUSTOM_KEYS.isSkipped()) {
 					break custom_keys;
 				}
