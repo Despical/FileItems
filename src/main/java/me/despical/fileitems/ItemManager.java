@@ -108,6 +108,14 @@ public final class ItemManager {
 			return new ItemBuilder(material);
 		}
 
+		final String identifier = ORAXEN_IDENTIFIER.getPath();
+
+		if (!materialName.startsWith(identifier)) {
+			throw new IllegalArgumentException("Material name does not start with the Oraxen identifier: '%s'".formatted(materialName));
+		}
+
+		materialName = materialName.substring(identifier.length());
+
 		var itemBuilder = OraxenItems.getItemById(materialName);
 
 		if (itemBuilder == null) {
