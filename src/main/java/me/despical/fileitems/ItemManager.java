@@ -50,6 +50,12 @@ public final class ItemManager {
 		this.addCustomKey(key, UnaryOperator.identity());
 	}
 
+	public void addCustomKeys(@NotNull String... keys) {
+		for (final var key : keys) {
+			this.addCustomKey(key);
+		}
+	}
+
 	public void addCustomKey(@NotNull String key, @NotNull Function<Object, Object> keyMapper) {
 		this.customKeys.put(key, keyMapper);
 	}
