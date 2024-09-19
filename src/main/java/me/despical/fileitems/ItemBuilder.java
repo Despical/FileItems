@@ -9,7 +9,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -22,16 +21,15 @@ import static me.despical.fileitems.ItemOption.*;
  * <p>
  * Created at 17.09.2024
  */
-@ApiStatus.Internal
-final class ItemBuilder {
+public final class ItemBuilder {
 
 	private final ItemStack itemStack;
 
-	public ItemBuilder(Material material) {
+	ItemBuilder(Material material) {
 		this.itemStack = new ItemStack(material);
 	}
 
-	public ItemBuilder(ItemStack itemStack) {
+	ItemBuilder(ItemStack itemStack) {
 		this.itemStack = itemStack;
 	}
 
