@@ -6,7 +6,7 @@
 
     <groupId>me.despical.fileitems</groupId>
     <artifactId>file-items</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <name>File Items</name>
     <inceptionYear>2024</inceptionYear>
@@ -82,7 +82,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.8.1</version>
                 <goals>
                     <goal>compile</goal>
                 </goals>
