@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +45,10 @@ public final class ItemManager {
 
 	public SpecialItem getItem(@NotNull String itemName) {
 		return this.items.get(itemName);
+	}
+
+	public Optional<SpecialItem> findItem(@Nullable String itemName) {
+		return itemName == null ? Optional.empty() : Optional.ofNullable(this.items.get(itemName));
 	}
 
 	public void addCustomKey(@NotNull String key) {
