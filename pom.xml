@@ -6,7 +6,7 @@
 
     <groupId>me.despical.fileitems</groupId>
     <artifactId>file-items</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
     <name>File Items</name>
     <inceptionYear>2024</inceptionYear>
@@ -93,21 +93,8 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
