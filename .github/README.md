@@ -36,7 +36,7 @@ To add this project as a dependency to your project, add the following to your p
 <dependency>
     <groupId>com.github.Despical</groupId>
     <artifactId>FileItems</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
@@ -48,7 +48,7 @@ repositories {
 ```
 ```groovy
 dependencies {
-    implementation 'com.github.Despical:FileItems:1.0.2'
+    implementation 'com.github.Despical:FileItems:1.0.3'
 }
 ```
 
