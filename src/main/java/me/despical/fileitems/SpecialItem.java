@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Despical
@@ -32,5 +33,14 @@ public final class SpecialItem {
 
 	void addCustomKey(String key, Object value) {
 		this.customKeys.put(key, value);
+	}
+
+	public boolean equals(ItemStack item) {
+		final var meta = item.getItemMeta();
+		final var itemMeta = item.getItemMeta();
+
+		return item.getType() == itemStack.getType() &&
+			Objects.equals(meta.getDisplayName(), itemMeta.getDisplayName()) &&
+			Objects.equals(meta.getLore(), itemMeta.getLore());
 	}
 }
