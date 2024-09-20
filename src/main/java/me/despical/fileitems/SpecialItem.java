@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Despical
@@ -29,6 +30,10 @@ public final class SpecialItem {
 
 	public <T> T getCustomKey(final @NotNull String key) {
 		return (T) this.customKeys.get(key);
+	}
+
+	public <T> Optional<T> findCustomKey(final @NotNull String key) {
+		return Optional.ofNullable((T) this.customKeys.get(key));
 	}
 
 	void addCustomKey(String key, Object value) {
