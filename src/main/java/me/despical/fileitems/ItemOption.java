@@ -13,17 +13,17 @@ import java.util.stream.Stream;
 public enum ItemOption {
 
 	AMOUNT("amount", true),
-	CUSTOM_KEYS(null, true),
+	CUSTOM_KEYS(null, false),
 	DATA("data", true),
 	DURABILITY("durability", true),
 	GLOW("glow", true),
-	HIDE_TOOL_TIPS("hideToolTips", true),
-	ITEM_FLAGS("itemFlags", true),
+	HIDE_TOOL_TIPS("hideToolTips", false),
+	ITEM_FLAGS("itemFlags", false),
 	LORE("lore", false),
 	MATERIAL("material", false),
 	NAME("name", false),
-	ORAXEN_IDENTIFIER("oraxen:", true),
-	UNBREAKABLE("unbreakable", true);
+	ORAXEN("oraxen:", false),
+	UNBREAKABLE("unbreakable", false);
 
 	private static UnaryOperator<String> colorFormatter = Strings::format;
 
