@@ -131,7 +131,8 @@ public final class ItemManager {
 		final String identifier = ORAXEN.getPath();
 
 		if (!materialName.startsWith(identifier)) {
-			throw new IllegalArgumentException("Material name does not start with the Oraxen identifier: '%s'".formatted(materialName));
+			Material material = XMaterial.matchXMaterial(materialName).orElseThrow().parseMaterial();
+			return new ItemBuilder(material);
 		}
 
 		materialName = materialName.substring(identifier.length());
