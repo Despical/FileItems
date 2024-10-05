@@ -8,8 +8,8 @@
 [![](https://img.shields.io/badge/License-GPLv3-blue.svg)](../LICENSE)
 [![](https://img.shields.io/badge/javadoc-latest-lime.svg)](https://javadoc.jitpack.io/com/github/Despical/FileItems/latest/javadoc/index.html)
 
-File Items is a very lightweight library that helps load items with customizable features, such as display names, glowing effects,
-hidden tooltips, amounts, lore, data, durability, unbreakable item flags, and custom keys.
+File Items is a very lightweight library that helps loading items with customizable features, such as display names, glowing effects,
+hidden tooltips, amounts, lore, data, durability, unbreakable item flags, and custom keys from a YAML file.
 
 </div>
 
