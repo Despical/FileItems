@@ -3,9 +3,10 @@
 <div align="center">
 
 [![](https://github.com/Despical/FileItems/actions/workflows/build.yml/badge.svg)](https://github.com/Despical/FileItems/actions/workflows/build.yml)
+[![](https://img.shields.io/github/v/release/Despical/FileItems)](https://github.com/Despical/FileItems/releases/latest)
 [![](https://jitpack.io/v/Despical/FileItems.svg)](https://jitpack.io/#Despical/FileItems)
+[![](https://img.shields.io/badge/License-GPLv3-blue.svg)](../LICENSE)
 [![](https://img.shields.io/badge/javadoc-latest-lime.svg)](https://javadoc.jitpack.io/com/github/Despical/FileItems/latest/javadoc/index.html)
-[![](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-lime.svg?logo=BuyMeACoffee)](https://www.buymeacoffee.com/despical)
 
 File Items is a very lightweight library that helps load items with customizable features, such as display names, glowing effects,
 hidden tooltips, amounts, lore, data, durability, unbreakable item flags, and custom keys.
@@ -36,7 +37,7 @@ To add this project as a dependency to your project, add the following to your p
 <dependency>
     <groupId>com.github.Despical</groupId>
     <artifactId>FileItems</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 </dependency>
 ```
 
@@ -48,7 +49,7 @@ repositories {
 ```
 ```groovy
 dependencies {
-    implementation 'com.github.Despical:FileItems:1.0.4'
+    implementation 'com.github.Despical:FileItems:1.0.5'
 }
 ```
 
