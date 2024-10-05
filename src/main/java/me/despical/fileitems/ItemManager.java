@@ -32,15 +32,19 @@ public final class ItemManager {
 	private Consumer<ItemBuilder> builderEditor;
 
 	private final JavaPlugin plugin;
-	private final boolean oraxenEnabled;
 	private final Map<String, SpecialItem> items;
 	private final Map<String, Function<Object, Object>> customKeys;
 
 	public ItemManager(@NotNull JavaPlugin plugin) {
+		this(plugin, null);
+	}
+
+	public ItemManager(@NotNull JavaPlugin plugin, @Nullable Consumer<ItemManager> function) {
 		this.plugin = plugin;
 		this.items = new HashMap<>();
-		this.oraxenEnabled = plugin.getServer().getPluginManager().isPluginEnabled("Oraxen");
 		this.customKeys = new HashMap<>();
+
+		Optional.ofNullable(function).ifPresent(consumer -> consumer.accept(this));
 	}
 
 	public SpecialItem getItem(@NotNull String itemName) {
@@ -123,6 +127,8 @@ public final class ItemManager {
 
 	@NotNull
 	private ItemBuilder createItemBuilder(String materialName) {
+		final boolean oraxenEnabled = plugin.getServer().getPluginManager().isPluginEnabled("Oraxen");
+
 		if (!oraxenEnabled) {
 			Material material = XMaterial.matchXMaterial(materialName).orElseThrow().parseMaterial();
 			return new ItemBuilder(material);
