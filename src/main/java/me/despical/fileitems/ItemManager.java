@@ -96,7 +96,7 @@ public final class ItemManager {
 				.data((byte) section.getInt(DATA.getFormattedPath(key)))
 				.unbreakable(section.getBoolean(UNBREAKABLE.getFormattedPath(key)))
 				.glow(section.getBoolean(GLOW.getFormattedPath(key)))
-				.hideToolTip(section.getBoolean(HIDE_TOOL_TIPS.getFormattedPath(key)))
+				.hideTooltip(section.getBoolean(HIDE_TOOLTIP.getFormattedPath(key)))
 				.lore(section.getStringList(LORE.getFormattedPath(key)))
 				.flag(section.getStringList(ITEM_FLAGS.getFormattedPath(key))
 					.stream()

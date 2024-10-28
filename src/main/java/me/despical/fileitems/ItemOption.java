@@ -17,7 +17,7 @@ public enum ItemOption {
 	DATA("data", true),
 	DURABILITY("durability", true),
 	GLOW("glow", true),
-	HIDE_TOOL_TIPS("hideToolTips", false),
+	HIDE_TOOLTIP("hideTooltip", false),
 	ITEM_FLAGS("itemFlags", false),
 	LORE("lore", false),
 	MATERIAL("material", false),

@@ -1,11 +1,13 @@
 package me.despical.fileitems;
 
+import com.google.common.collect.Multimap;
 import me.despical.commons.compat.XEnchantment;
 import me.despical.commons.reflection.XReflection;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -116,17 +118,25 @@ public final class ItemBuilder {
 		});
 	}
 
-	public ItemBuilder hideToolTip(boolean hideToolTip) {
-		if (HIDE_TOOL_TIPS.isSkipped()) {
+	public ItemBuilder hideTooltip(boolean hideToolTip) {
+		if (HIDE_TOOLTIP.isSkipped()) {
 			return this;
 		}
 
 		return hideToolTip ? this.edit(itemMeta -> {
-			if (XReflection.supports(21)) {
-				itemMeta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier("SpecialItem", 0, AttributeModifier.Operation.ADD_NUMBER));
+			if (XReflection.supports(20, 5)) {
+				try {
+					Method getDefaultAttributeModifiers = Material.class.getMethod("getDefaultAttributeModifiers", EquipmentSlot.class);
+					getDefaultAttributeModifiers.setAccessible(true);
+
+					Multimap<Attribute, AttributeModifier> defaultAttributes = (Multimap<Attribute, AttributeModifier>) getDefaultAttributeModifiers.invoke(itemStack.getType(), EquipmentSlot.HAND);
+					itemMeta.setAttributeModifiers(defaultAttributes);
+				} catch (Throwable ignored) {
+					ignored.printStackTrace();
+				}
 			}
 
-			itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemMeta.addItemFlags(ItemFlag.values());
 		}) : this;
 	}
 
