@@ -6,14 +6,16 @@ import me.despical.commons.configuration.ConfigUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -60,7 +62,7 @@ public final class ItemManager {
 	}
 
 	public void addCustomKeys(@NotNull String... keys) {
-		for (final var key : keys) {
+		for (String key : keys) {
 			this.addCustomKey(key);
 		}
 	}
@@ -74,11 +76,25 @@ public final class ItemManager {
 	}
 
 	public void registerItems(@NotNull String fileName, @NotNull String path) {
-		FileConfiguration config = ConfigUtils.getConfig(plugin, fileName);
+		registerItems(path, ConfigUtils.getConfig(plugin, fileName));
+	}
+
+	public void registerItemsFromResources(@NotNull String fileName, @NotNull String path) {
+		InputStream inputStream = plugin.getResource(fileName);
+
+		if (inputStream == null) {
+			throw new NullPointerException("The given file could not be found in the resources!");
+		}
+
+		FileConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream));
+		registerItems(path, config);
+	}
+
+	private void registerItems(@NotNull String path, FileConfiguration config) {
 		ConfigurationSection section = config.getConfigurationSection(path);
 
 		if (section == null) {
-			throw new NoSuchElementException("No such configuration section exists!");
+			throw new NullPointerException("No such configuration section exists!");
 		}
 
 		for (String key : section.getKeys(false)) {
@@ -113,7 +129,7 @@ public final class ItemManager {
 					break custom_keys;
 				}
 
-				for (final var entry : this.customKeys.entrySet()) {
+				for (var entry : this.customKeys.entrySet()) {
 					String entryKey = entry.getKey();
 					Object value = section.get("%s.%s".formatted(key, entryKey));
 
@@ -127,14 +143,14 @@ public final class ItemManager {
 
 	@NotNull
 	private ItemBuilder createItemBuilder(String materialName) {
-		final boolean oraxenEnabled = plugin.getServer().getPluginManager().isPluginEnabled("Oraxen");
+		boolean oraxenEnabled = plugin.getServer().getPluginManager().isPluginEnabled("Oraxen");
 
 		if (!oraxenEnabled) {
 			Material material = XMaterial.matchXMaterial(materialName).orElseThrow().parseMaterial();
 			return new ItemBuilder(material);
 		}
 
-		final String identifier = ORAXEN.getPath();
+		String identifier = ORAXEN.getPath();
 
 		if (!materialName.startsWith(identifier)) {
 			Material material = XMaterial.matchXMaterial(materialName).orElseThrow().parseMaterial();
