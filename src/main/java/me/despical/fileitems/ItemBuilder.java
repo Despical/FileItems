@@ -159,4 +159,12 @@ public final class ItemBuilder {
 		this.itemStack.setItemMeta(itemMeta);
 		return this;
 	}
+
+	ItemBuilder consume(Consumer<ItemBuilder> consumer) {
+		if (consumer != null) {
+			consumer.accept(this);
+		}
+
+		return this;
+	}
 }

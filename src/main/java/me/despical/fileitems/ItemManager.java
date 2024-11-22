@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -117,19 +118,17 @@ public final class ItemManager {
 				.flag(section.getStringList(ITEM_FLAGS.getFormattedPath(key))
 					.stream()
 					.map(ItemFlag::valueOf)
-					.toArray(ItemFlag[]::new));
-
-			Optional.ofNullable(this.builderEditor).ifPresent(consumer -> consumer.accept(itemBuilder));
+					.toArray(ItemFlag[]::new))
+				.consume(builderEditor);
 
 			SpecialItem item = new SpecialItem(itemBuilder.build());
 
-			custom_keys:
-			{
+			custom_keys: {
 				if (CUSTOM_KEYS.isSkipped()) {
 					break custom_keys;
 				}
 
-				for (var entry : this.customKeys.entrySet()) {
+				for (var entry : customKeys.entrySet()) {
 					String entryKey = entry.getKey();
 					Object value = section.get("%s.%s".formatted(key, entryKey));
 
@@ -153,8 +152,8 @@ public final class ItemManager {
 		String identifier = ORAXEN.getPath();
 
 		if (!materialName.startsWith(identifier)) {
-			Material material = XMaterial.matchXMaterial(materialName).orElseThrow().parseMaterial();
-			return new ItemBuilder(material);
+			ItemStack item = XMaterial.matchXMaterial(materialName).orElseThrow().parseItem();
+			return new ItemBuilder(item);
 		}
 
 		materialName = materialName.substring(identifier.length());
