@@ -3,7 +3,6 @@ package me.despical.fileitems;
 import io.th0rgal.oraxen.api.OraxenItems;
 import me.despical.commons.compat.XMaterial;
 import me.despical.commons.configuration.ConfigUtils;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -145,15 +144,15 @@ public final class ItemManager {
 		boolean oraxenEnabled = plugin.getServer().getPluginManager().isPluginEnabled("Oraxen");
 
 		if (!oraxenEnabled) {
-			Material material = XMaterial.matchXMaterial(materialName).orElseThrow().parseMaterial();
-			return new ItemBuilder(material);
+			ItemStack itemStack = XMaterial.matchXMaterial(materialName).orElseThrow().parseItem();
+			return new ItemBuilder(itemStack);
 		}
 
 		String identifier = ORAXEN.getPath();
 
 		if (!materialName.startsWith(identifier)) {
-			ItemStack item = XMaterial.matchXMaterial(materialName).orElseThrow().parseItem();
-			return new ItemBuilder(item);
+			ItemStack itemStack = XMaterial.matchXMaterial(materialName).orElseThrow().parseItem();
+			return new ItemBuilder(itemStack);
 		}
 
 		materialName = materialName.substring(identifier.length());

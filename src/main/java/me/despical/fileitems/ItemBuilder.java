@@ -27,10 +27,6 @@ public final class ItemBuilder {
 
 	private final ItemStack itemStack;
 
-	ItemBuilder(Material material) {
-		this.itemStack = new ItemStack(material);
-	}
-
 	ItemBuilder(ItemStack itemStack) {
 		this.itemStack = itemStack;
 	}
