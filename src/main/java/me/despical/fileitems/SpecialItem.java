@@ -1,7 +1,9 @@
 package me.despical.fileitems;
 
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,11 +30,11 @@ public final class SpecialItem {
 		return this.itemStack;
 	}
 
-	public <T> T getCustomKey(final @NotNull String key) {
+	public <T> T getCustomKey(@NotNull String key) {
 		return (T) this.customKeys.get(key);
 	}
 
-	public <T> Optional<T> findCustomKey(final @NotNull String key) {
+	public <T> Optional<T> findCustomKey(@NotNull String key) {
 		return Optional.ofNullable((T) this.customKeys.get(key));
 	}
 
@@ -40,9 +42,11 @@ public final class SpecialItem {
 		this.customKeys.put(key, value);
 	}
 
-	public boolean equals(ItemStack item) {
-		final var meta = item.getItemMeta();
-		final var itemMeta = item.getItemMeta();
+	public boolean equals(@Nullable ItemStack item) {
+		if (item == null) return false;
+
+		ItemMeta meta = item.getItemMeta();
+		ItemMeta itemMeta = item.getItemMeta();
 
 		return item.getType() == itemStack.getType() &&
 			Objects.equals(meta.getDisplayName(), itemMeta.getDisplayName()) &&
