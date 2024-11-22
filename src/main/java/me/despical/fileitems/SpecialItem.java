@@ -46,7 +46,7 @@ public final class SpecialItem {
 		if (item == null) return false;
 
 		ItemMeta meta = item.getItemMeta();
-		ItemMeta itemMeta = item.getItemMeta();
+		ItemMeta itemMeta = itemStack.getItemMeta();
 
 		return item.getType() == itemStack.getType() &&
 			Objects.equals(meta.getDisplayName(), itemMeta.getDisplayName()) &&
