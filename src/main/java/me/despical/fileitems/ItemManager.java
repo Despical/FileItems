@@ -5,15 +5,12 @@ import me.despical.commons.compat.XMaterial;
 import me.despical.commons.configuration.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -80,14 +77,7 @@ public final class ItemManager {
 	}
 
 	public void registerItemsFromResources(@NotNull String fileName, @NotNull String path) {
-		InputStream inputStream = plugin.getResource(fileName);
-
-		if (inputStream == null) {
-			throw new NullPointerException("The given file could not be found in the resources!");
-		}
-
-		FileConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream));
-		registerItems(path, config);
+		registerItems(path, ConfigUtils.getConfigFromResources(plugin, fileName));
 	}
 
 	private void registerItems(@NotNull String path, FileConfiguration config) {
