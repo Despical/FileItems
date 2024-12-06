@@ -92,6 +92,16 @@ public final class ItemManager {
 		registerItems(path, ConfigUtils.getConfigFromResources(plugin, fileName));
 	}
 
+	public void registerItems(@NotNull String categoryName, @NotNull String path, FileConfiguration config) {
+		ConfigurationSection section = config.getConfigurationSection(path);
+
+		if (section == null) {
+			throw new NullPointerException("No such configuration section exists!");
+		}
+
+		this.categoriedItems.put(categoryName, getSectionItems(section));
+	}
+
 	private void registerItems(@NotNull String path, FileConfiguration config) {
 		ConfigurationSection section = config.getConfigurationSection(path);
 
@@ -100,16 +110,6 @@ public final class ItemManager {
 		}
 
 		this.items.putAll(getSectionItems(section));
-	}
-
-	private void registerItems(@NotNull String categoryName, @NotNull String path, FileConfiguration config) {
-		ConfigurationSection section = config.getConfigurationSection(path);
-
-		if (section == null) {
-			throw new NullPointerException("No such configuration section exists!");
-		}
-
-		this.categoriedItems.put(categoryName, getSectionItems(section));
 	}
 
 	private Map<String, SpecialItem> getSectionItems(@NotNull ConfigurationSection section) {
