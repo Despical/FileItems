@@ -99,9 +99,7 @@ public final class ItemManager {
 			throw new NullPointerException("No such configuration section exists!");
 		}
 
-		for (Map.Entry<String, SpecialItem> entry : getSectionItems(section)) {
-			this.items.put(entry.getKey(), entry.getValue());
-		}
+		this.items.putAll(getSectionItems(section));
 	}
 
 	private void registerItems(@NotNull String categoryName, @NotNull String path, FileConfiguration config) {
