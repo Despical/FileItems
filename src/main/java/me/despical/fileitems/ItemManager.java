@@ -11,9 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -32,6 +30,7 @@ public final class ItemManager {
 
 	private final JavaPlugin plugin;
 	private final Map<String, SpecialItem> items;
+	private final Map<String, Map<String, SpecialItem>> categoriedItems;
 	private final Map<String, Function<Object, Object>> customKeys;
 
 	public ItemManager(@NotNull JavaPlugin plugin) {
@@ -41,6 +40,7 @@ public final class ItemManager {
 	public ItemManager(@NotNull JavaPlugin plugin, @Nullable Consumer<ItemManager> function) {
 		this.plugin = plugin;
 		this.items = new HashMap<>();
+		this.categoriedItems = new HashMap<>();
 		this.customKeys = new HashMap<>();
 
 		Optional.ofNullable(function).ifPresent(consumer -> consumer.accept(this));
@@ -48,6 +48,18 @@ public final class ItemManager {
 
 	public SpecialItem getItem(@NotNull String itemName) {
 		return this.items.get(itemName);
+	}
+
+	public Collection<SpecialItem> getItems() {
+		return this.items.values();
+	}
+
+	public SpecialItem getItemFromCategory(@NotNull String categoryName, @NotNull String itemName) {
+		return this.categoriedItems.get(categoryName).get(itemName);
+	}
+
+	public Collection<SpecialItem> getItemsFromCategory(@NotNull String categoryName) {
+		return this.categoriedItems.get(categoryName).values();
 	}
 
 	public Optional<SpecialItem> findItem(@Nullable String itemName) {
@@ -87,6 +99,24 @@ public final class ItemManager {
 			throw new NullPointerException("No such configuration section exists!");
 		}
 
+		for (Map.Entry<String, SpecialItem> entry : getSectionItems(section)) {
+			this.items.put(entry.getKey(), entry.getValue());
+		}
+	}
+
+	private void registerItems(@NotNull String categoryName, @NotNull String path, FileConfiguration config) {
+		ConfigurationSection section = config.getConfigurationSection(path);
+
+		if (section == null) {
+			throw new NullPointerException("No such configuration section exists!");
+		}
+
+		this.categoriedItems.put(categoryName, getSectionItems(section));
+	}
+
+	private Map<String, SpecialItem> getSectionItems(@NotNull ConfigurationSection section) {
+		Map<String, SpecialItem> items = new HashMap<>();
+
 		for (String key : section.getKeys(false)) {
 			String materialName = section.getString(MATERIAL.getFormattedPath(key));
 
@@ -125,8 +155,10 @@ public final class ItemManager {
 				}
 			}
 
-			this.items.put(key, item);
+			items.put(key, item);
 		}
+
+		return items;
 	}
 
 	@NotNull
