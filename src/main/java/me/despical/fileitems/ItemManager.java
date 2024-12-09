@@ -1,6 +1,7 @@
 package me.despical.fileitems;
 
 import io.th0rgal.oraxen.api.OraxenItems;
+import me.despical.commons.compat.XEnchantment;
 import me.despical.commons.compat.XMaterial;
 import me.despical.commons.configuration.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -103,6 +104,10 @@ public final class ItemManager {
 		this.categoriedItems.put(categoryName, getSectionItems(section));
 	}
 
+	public void registerItemsFromResources(@NotNull String categoryName, @NotNull String path, @NotNull String fileName) {
+		registerItems(categoryName, path, ConfigUtils.getConfigFromResources(plugin, fileName));
+	}
+
 	private void registerItems(@NotNull String path, FileConfiguration config) {
 		ConfigurationSection section = config.getConfigurationSection(path);
 
@@ -144,13 +149,14 @@ public final class ItemManager {
 				String[] parts = enchant.split(" ");
 
 				if (parts.length != 2) {
-					throw new IllegalArgumentException("Invalid enchantment format. Expected 'name:level'.");
+					throw new IllegalArgumentException("Invalid enchantment format. Expected 'name level'.");
 				}
 
 				String name = parts[0];
 				int level = Integer.parseInt(parts[1]);
 
-				itemBuilder.enchantment(Enchantment.getByName(name.toUpperCase(Locale.ROOT)), level);
+				Enchantment parsedEnchant = XEnchantment.matchXEnchantment(name.toUpperCase(Locale.ROOT)).orElseThrow().getEnchant();
+				itemBuilder.enchantment(parsedEnchant, level);
 			}
 
 			SpecialItem item = new SpecialItem(itemBuilder.build());
