@@ -16,6 +16,7 @@ public enum ItemOption {
 	CUSTOM_KEYS(null, false),
 	DATA("data", true),
 	DURABILITY("durability", true),
+	ENCHANTS("enchants", true),
 	GLOW("glow", true),
 	HIDE_TOOLTIP("hideTooltip", false),
 	ITEM_FLAGS("itemFlags", false),

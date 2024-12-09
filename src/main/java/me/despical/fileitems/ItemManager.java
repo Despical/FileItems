@@ -5,6 +5,7 @@ import me.despical.commons.compat.XMaterial;
 import me.despical.commons.configuration.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -137,6 +138,20 @@ public final class ItemManager {
 					.map(ItemFlag::valueOf)
 					.toArray(ItemFlag[]::new))
 				.consume(builderEditor);
+
+			List<String> enchantments = section.getStringList(ENCHANTS.getFormattedPath(key));
+			for (String enchant : enchantments) {
+				String[] parts = enchant.split(" ");
+
+				if (parts.length != 2) {
+					throw new IllegalArgumentException("Invalid enchantment format. Expected 'name:level'.");
+				}
+
+				String name = parts[0];
+				int level = Integer.parseInt(parts[1]);
+
+				itemBuilder.enchantment(Enchantment.getByName(name.toUpperCase(Locale.ROOT)), level);
+			}
 
 			SpecialItem item = new SpecialItem(itemBuilder.build());
 
