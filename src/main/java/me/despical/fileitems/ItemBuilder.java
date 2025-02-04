@@ -1,7 +1,7 @@
 package me.despical.fileitems;
 
 import com.google.common.collect.Multimap;
-import me.despical.commons.compat.XEnchantment;
+import me.despical.commons.XEnchantment;
 import me.despical.commons.reflection.XReflection;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;

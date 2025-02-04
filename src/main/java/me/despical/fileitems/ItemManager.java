@@ -1,8 +1,8 @@
 package me.despical.fileitems;
 
 import io.th0rgal.oraxen.api.OraxenItems;
-import me.despical.commons.compat.XEnchantment;
-import me.despical.commons.compat.XMaterial;
+import me.despical.commons.XEnchantment;
+import me.despical.commons.XMaterial;
 import me.despical.commons.configuration.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -28,12 +28,12 @@ import static me.despical.fileitems.ItemOption.*;
  */
 public final class ItemManager {
 
-	private Consumer<ItemBuilder> builderEditor;
+	private Consumer<ItemBuilder> builderConsumer;
 
 	private final JavaPlugin plugin;
 	private final Map<String, SpecialItem> items;
-	private final Map<String, Map<String, SpecialItem>> categoriedItems;
 	private final Map<String, Function<Object, Object>> customKeys;
+	private final Map<String, Map<String, SpecialItem>> categorizedItems;
 
 	public ItemManager(@NotNull JavaPlugin plugin) {
 		this(plugin, null);
@@ -42,8 +42,8 @@ public final class ItemManager {
 	public ItemManager(@NotNull JavaPlugin plugin, @Nullable Consumer<ItemManager> function) {
 		this.plugin = plugin;
 		this.items = new HashMap<>();
-		this.categoriedItems = new HashMap<>();
 		this.customKeys = new HashMap<>();
+		this.categorizedItems = new HashMap<>();
 
 		Optional.ofNullable(function).ifPresent(consumer -> consumer.accept(this));
 	}
@@ -57,11 +57,11 @@ public final class ItemManager {
 	}
 
 	public SpecialItem getItemFromCategory(@NotNull String categoryName, @NotNull String itemName) {
-		return this.categoriedItems.get(categoryName).get(itemName);
+		return this.categorizedItems.get(categoryName).get(itemName);
 	}
 
 	public Collection<SpecialItem> getItemsFromCategory(@NotNull String categoryName) {
-		return this.categoriedItems.get(categoryName).values();
+		return this.categorizedItems.get(categoryName).values();
 	}
 
 	public Optional<SpecialItem> findItem(@Nullable String itemName) {
@@ -83,7 +83,7 @@ public final class ItemManager {
 	}
 
 	public void editItemBuilder(Consumer<ItemBuilder> builderConsumer) {
-		this.builderEditor = builderConsumer;
+		this.builderConsumer = builderConsumer;
 	}
 
 	public void registerItems(@NotNull String fileName, @NotNull String path) {
@@ -101,7 +101,7 @@ public final class ItemManager {
 			throw new NullPointerException("No such configuration section exists!");
 		}
 
-		this.categoriedItems.put(categoryName, getSectionItems(section));
+		this.categorizedItems.put(categoryName, getSectionItems(section));
 	}
 
 	public void registerItemsFromResources(@NotNull String categoryName, @NotNull String path, @NotNull String fileName) {
@@ -142,7 +142,7 @@ public final class ItemManager {
 					.stream()
 					.map(ItemFlag::valueOf)
 					.toArray(ItemFlag[]::new))
-				.consume(builderEditor);
+				.consume(builderConsumer);
 
 			List<String> enchantments = section.getStringList(ENCHANTS.getFormattedPath(key));
 			for (String enchant : enchantments) {
