@@ -27,19 +27,24 @@ public final class SpecialItem {
 
 	@NotNull
 	public ItemStack getItemStack() {
-		return this.itemStack;
+		return itemStack.clone();
+	}
+
+	@NotNull
+	public ItemBuilder asItemBuilder() {
+		return new ItemBuilder(itemStack);
 	}
 
 	public <T> T getCustomKey(@NotNull String key) {
-		return (T) this.customKeys.get(key);
+		return (T) customKeys.get(key);
 	}
 
 	public <T> Optional<T> findCustomKey(@NotNull String key) {
-		return Optional.ofNullable((T) this.customKeys.get(key));
+		return Optional.ofNullable((T) customKeys.get(key));
 	}
 
 	void addCustomKey(String key, Object value) {
-		this.customKeys.put(key, value);
+		customKeys.put(key, value);
 	}
 
 	public boolean equals(@Nullable ItemStack item) {

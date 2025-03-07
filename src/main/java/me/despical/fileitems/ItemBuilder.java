@@ -127,8 +127,8 @@ public final class ItemBuilder {
 
 					Multimap<Attribute, AttributeModifier> defaultAttributes = (Multimap<Attribute, AttributeModifier>) getDefaultAttributeModifiers.invoke(itemStack.getType(), EquipmentSlot.HAND);
 					itemMeta.setAttributeModifiers(defaultAttributes);
-				} catch (Throwable ignored) {
-					ignored.printStackTrace();
+				} catch (Throwable exception) {
+					exception.printStackTrace();
 				}
 			}
 
@@ -141,7 +141,12 @@ public final class ItemBuilder {
 			return this;
 		}
 
-		return glow ? this.enchantment(XEnchantment.INFINITY.getEnchant(), 1).flag(ItemFlag.HIDE_ENCHANTS) : this;
+		if (glow) {
+			return this.enchantment(XEnchantment.INFINITY.get(), 1).flag(ItemFlag.HIDE_ENCHANTS);
+		}
+
+		itemStack.removeEnchantment(XEnchantment.INFINITY.get());
+		return this;	
 	}
 
 	public ItemStack build() {
