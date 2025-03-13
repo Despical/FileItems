@@ -35,10 +35,22 @@ public final class SpecialItem {
 		return new ItemBuilder(itemStack);
 	}
 
+	/**
+	 * Returns the value to which the specified key is mapped,
+	 * or {@code null} if the custom keys map contains no mapping
+	 * for the key.
+	 *
+	 * @param key the key whose associated value is to be returned
+	 * @return the value to which the specified key is mapped, or
+	 *         {@code null} if this map contains no mapping for the key
+	 * @param <T> the class of the objects in the custom keys Map.
+	 */
+	@SuppressWarnings("unchecked")
 	public <T> T getCustomKey(@NotNull String key) {
 		return (T) customKeys.get(key);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> Optional<T> findCustomKey(@NotNull String key) {
 		return Optional.ofNullable((T) customKeys.get(key));
 	}
