@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.logging.Level;
 
 import static me.despical.fileitems.ItemOption.*;
 
@@ -60,8 +59,8 @@ public final class ItemManager {
 		return categorizedItems.get(categoryName).get(itemName);
 	}
 
-	public Collection<SpecialItem> getItemsFromCategory(@NotNull String categoryName) {
-		return categorizedItems.get(categoryName).values();
+	public List<SpecialItem> getItemsFromCategory(@NotNull String categoryName) {
+		return List.copyOf(categorizedItems.get(categoryName).values());
 	}
 
 	public Optional<SpecialItem> findItem(@Nullable String itemName) {
@@ -129,7 +128,6 @@ public final class ItemManager {
 			String materialName = section.getString(MATERIAL.getFormattedPath(key));
 
 			if (materialName == null) {
-				plugin.getLogger().log(Level.WARNING, "Material name does not exists for the key ''{0}''!", key);
 				continue;
 			}
 
