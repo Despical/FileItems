@@ -31,6 +31,11 @@ public final class SpecialItem {
 	}
 
 	@NotNull
+	public ItemStack getOriginalItemStack() {
+		return itemStack;
+	}
+
+	@NotNull
 	public ItemBuilder asItemBuilder() {
 		return new ItemBuilder(itemStack);
 	}

@@ -49,37 +49,37 @@ public final class ItemManager {
 	}
 
 	public SpecialItem getItem(@NotNull String itemName) {
-		return this.items.get(itemName);
+		return items.get(itemName);
 	}
 
 	public Collection<SpecialItem> getItems() {
-		return this.items.values();
+		return items.values();
 	}
 
 	public SpecialItem getItemFromCategory(@NotNull String categoryName, @NotNull String itemName) {
-		return this.categorizedItems.get(categoryName).get(itemName);
+		return categorizedItems.get(categoryName).get(itemName);
 	}
 
 	public Collection<SpecialItem> getItemsFromCategory(@NotNull String categoryName) {
-		return this.categorizedItems.get(categoryName).values();
+		return categorizedItems.get(categoryName).values();
 	}
 
 	public Optional<SpecialItem> findItem(@Nullable String itemName) {
-		return itemName == null ? Optional.empty() : Optional.ofNullable(this.items.get(itemName));
+		return itemName == null ? Optional.empty() : Optional.ofNullable(items.get(itemName));
 	}
 
 	public void addCustomKey(@NotNull String key) {
-		this.addCustomKey(key, UnaryOperator.identity());
+		addCustomKey(key, UnaryOperator.identity());
 	}
 
 	public void addCustomKeys(@NotNull String... keys) {
 		for (String key : keys) {
-			this.addCustomKey(key);
+			addCustomKey(key);
 		}
 	}
 
 	public void addCustomKey(@NotNull String key, @NotNull Function<Object, Object> keyMapper) {
-		this.customKeys.put(key, keyMapper);
+		customKeys.put(key, keyMapper);
 	}
 
 	public void editItemBuilder(Consumer<ItemBuilder> builderConsumer) {
@@ -94,6 +94,10 @@ public final class ItemManager {
 		registerItems(path, ConfigUtils.getConfigFromResources(plugin, fileName));
 	}
 
+	public void registerItems(@NotNull String categoryName, @NotNull String path, String fileName) {
+		registerItems(categoryName, path, ConfigUtils.getConfig(plugin, fileName));
+	}
+
 	public void registerItems(@NotNull String categoryName, @NotNull String path, FileConfiguration config) {
 		ConfigurationSection section = config.getConfigurationSection(path);
 
@@ -101,7 +105,7 @@ public final class ItemManager {
 			throw new NullPointerException("No such configuration section exists!");
 		}
 
-		this.categorizedItems.put(categoryName, getSectionItems(section));
+		categorizedItems.put(categoryName, getSectionItems(section));
 	}
 
 	public void registerItemsFromResources(@NotNull String categoryName, @NotNull String path, @NotNull String fileName) {
@@ -115,7 +119,7 @@ public final class ItemManager {
 			throw new NullPointerException("No such configuration section exists!");
 		}
 
-		this.items.putAll(getSectionItems(section));
+		items.putAll(getSectionItems(section));
 	}
 
 	private Map<String, SpecialItem> getSectionItems(@NotNull ConfigurationSection section) {
@@ -155,7 +159,7 @@ public final class ItemManager {
 				String name = parts[0];
 				int level = Integer.parseInt(parts[1]);
 
-				Enchantment parsedEnchant = XEnchantment.matchXEnchantment(name.toUpperCase(Locale.ROOT)).orElseThrow().getEnchant();
+				Enchantment parsedEnchant = XEnchantment.of(name.toUpperCase(Locale.ROOT)).orElseThrow().get();
 				itemBuilder.enchantment(parsedEnchant, level);
 			}
 
@@ -168,7 +172,11 @@ public final class ItemManager {
 
 				for (var entry : customKeys.entrySet()) {
 					String entryKey = entry.getKey();
-					Object value = section.get("%s.%s".formatted(key, entryKey));
+					String path = "%s.%s".formatted(key, entryKey);
+
+					if (!section.isSet(path)) continue;
+
+					Object value = section.get(path);
 
 					item.addCustomKey(entryKey, entry.getValue().apply(value));
 				}
