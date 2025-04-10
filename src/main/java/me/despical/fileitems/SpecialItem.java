@@ -1,5 +1,6 @@
 package me.despical.fileitems;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +39,30 @@ public final class SpecialItem {
 	@NotNull
 	public ItemBuilder asItemBuilder() {
 		return new ItemBuilder(itemStack);
+	}
+
+	/**
+	 * Stores the {@code ItemStack} of this {@code SpecialItem} instance
+	 * at the given {@code slot} index of the given {@code player}'s inventory.
+	 *
+	 * @param player the player who will receive the item
+	 * @param slot the slot index to store the item stack
+	 */
+	public void giveTo(Player player, int slot) {
+		player.getInventory().setItem(slot, itemStack);
+	}
+
+	/**
+	 * Retrieves the slot index associated with the given custom key and stores
+	 * the {@code ItemStack} of this {@code SpecialItem} instance in that slot
+	 * of the specified {@code player}'s inventory.
+	 *
+	 * @param player the player who will receive the item
+	 * @param key the custom key to retrieve the slot index
+	 */
+	public void giveTo(Player player, String key) {
+		int slot = getCustomKey(key);
+		giveTo(player, slot);
 	}
 
 	/**
