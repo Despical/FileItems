@@ -122,7 +122,7 @@ public final class ItemManager {
 	}
 
 	private Map<String, SpecialItem> getSectionItems(@NotNull ConfigurationSection section) {
-		Map<String, SpecialItem> items = new HashMap<>();
+		Map<String, SpecialItem> items = new LinkedHashMap<>();
 
 		for (String key : section.getKeys(false)) {
 			String materialName = section.getString(MATERIAL.getFormattedPath(key));
