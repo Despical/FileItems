@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"me.despical.fileitems","l":"ItemBuilder"},{"p":"me.despical.fileitems","l":"ItemManager"},{"p":"me.despical.fileitems","l":"ItemOption"},{"p":"me.despical.fileitems","l":"SpecialItem"}];updateSearchResults();
