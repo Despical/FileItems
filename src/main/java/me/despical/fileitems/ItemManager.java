@@ -34,16 +34,16 @@ public final class ItemManager {
     private Consumer<ItemBuilder> builderConsumer;
 
     public ItemManager(@NotNull JavaPlugin plugin) {
-        this(plugin, null);
+        this(plugin, manager -> {});
     }
 
-    public ItemManager(@NotNull JavaPlugin plugin, @Nullable Consumer<ItemManager> function) {
+    public ItemManager(@NotNull JavaPlugin plugin, @NotNull Consumer<ItemManager> function) {
         this.plugin = plugin;
         this.items = new HashMap<>();
         this.customKeys = new HashMap<>();
         this.categorizedItems = new HashMap<>();
 
-        Optional.ofNullable(function).ifPresent(consumer -> consumer.accept(this));
+        function.accept(this);
     }
 
     public SpecialItem getItem(@NotNull String itemName) {
