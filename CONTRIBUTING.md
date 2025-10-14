@@ -8,8 +8,8 @@ Please note we have a code of conduct, please follow it in all your interactions
 If you want to help this project and don't know where to start, check out the [currently opened issues](https://github.com/Despical/FileItems/issues)
 before creating any PRs. Because there are people that could use your help.
 
-* Ensure you didn't use spaces! Please use tabs for indentation.
 * Respect the code style.
+* Ensure you didn't use tabs! Please use spaces for indentation.
 * Do not increase the version numbers in any examples files and the README.md to the
   new version that this Pull Request would represent.
 * Create minimal diffs - disable on save actions like reformat source code or organize imports.

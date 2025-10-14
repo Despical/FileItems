@@ -25,147 +25,147 @@ import static me.despical.fileitems.ItemOption.*;
  */
 public final class ItemBuilder {
 
-	private final ItemStack itemStack;
+    private final ItemStack itemStack;
 
-	ItemBuilder(ItemStack itemStack) {
-		this.itemStack = itemStack;
-	}
+    ItemBuilder(ItemStack itemStack) {
+        this.itemStack = itemStack;
+    }
 
-	public ItemBuilder name(String displayName) {
-		if (NAME.isSkipped()) {
-			return this;
-		}
+    public ItemBuilder name(String displayName) {
+        if (NAME.isSkipped()) {
+            return this;
+        }
 
-		return this.edit(itemMeta -> itemMeta.setDisplayName(ItemOption.formatColors(displayName)));
-	}
+        return this.edit(itemMeta -> itemMeta.setDisplayName(ItemOption.formatColors(displayName)));
+    }
 
-	public ItemBuilder lore(Collection<String> lore) {
-		if (LORE.isSkipped()) {
-			return this;
-		}
+    public ItemBuilder lore(Collection<String> lore) {
+        if (LORE.isSkipped()) {
+            return this;
+        }
 
-		return this.edit(itemMeta -> itemMeta.setLore(lore
-				.stream()
-				.map(ItemOption::formatColors)
-				.toList()));
-	}
+        return this.edit(itemMeta -> itemMeta.setLore(lore
+            .stream()
+            .map(ItemOption::formatColors)
+            .toList()));
+    }
 
-	public ItemBuilder data(byte data) {
-		if (DATA.isSkipped()) {
-			return this;
-		}
+    public ItemBuilder data(byte data) {
+        if (DATA.isSkipped()) {
+            return this;
+        }
 
-		this.itemStack.getData().setData(data);
-		return this;
-	}
+        this.itemStack.getData().setData(data);
+        return this;
+    }
 
-	public ItemBuilder amount(int amount) {
-		if (AMOUNT.isSkipped()) {
-			return this;
-		}
+    public ItemBuilder amount(int amount) {
+        if (AMOUNT.isSkipped()) {
+            return this;
+        }
 
-		this.itemStack.setAmount(amount);
-		return this;
-	}
+        this.itemStack.setAmount(amount);
+        return this;
+    }
 
-	public ItemBuilder enchantment(Enchantment enchantment, int level) {
-		this.itemStack.addUnsafeEnchantment(enchantment, level);
-		return this;
-	}
+    public ItemBuilder enchantment(Enchantment enchantment, int level) {
+        this.itemStack.addUnsafeEnchantment(enchantment, level);
+        return this;
+    }
 
-	public ItemBuilder flag(ItemFlag... itemFlags) {
-		if (ITEM_FLAGS.isSkipped()) {
-			return this;
-		}
+    public ItemBuilder flag(ItemFlag... itemFlags) {
+        if (ITEM_FLAGS.isSkipped()) {
+            return this;
+        }
 
-		return this.edit(itemMeta -> itemMeta.addItemFlags(itemFlags));
-	}
+        return this.edit(itemMeta -> itemMeta.addItemFlags(itemFlags));
+    }
 
-	public ItemBuilder durability(short durability) {
-		if (DURABILITY.isSkipped()) {
-			return this;
-		}
+    public ItemBuilder durability(short durability) {
+        if (DURABILITY.isSkipped()) {
+            return this;
+        }
 
-		itemStack.setDurability(durability);
-		return this;
-	}
+        itemStack.setDurability(durability);
+        return this;
+    }
 
-	public ItemBuilder unbreakable(boolean unbreakable) {
-		if (UNBREAKABLE.isSkipped()) {
-			return this;
-		}
+    public ItemBuilder unbreakable(boolean unbreakable) {
+        if (UNBREAKABLE.isSkipped()) {
+            return this;
+        }
 
-		return this.edit(itemMeta -> {
-			if (XReflection.supports(9)) {
-				itemMeta.setUnbreakable(unbreakable);
-			} else {
-				try {
-					Method instanceMethod = itemMeta.getClass().getMethod("spigot");
-					instanceMethod.setAccessible(true);
+        return this.edit(itemMeta -> {
+            if (XReflection.supports(9)) {
+                itemMeta.setUnbreakable(unbreakable);
+            } else {
+                try {
+                    Method instanceMethod = itemMeta.getClass().getMethod("spigot");
+                    instanceMethod.setAccessible(true);
 
-					Object instance = instanceMethod.invoke(itemMeta);
-					Method unbreakableMethod = instance.getClass().getMethod("setUnbreakable", boolean.class);
-					unbreakableMethod.setAccessible(true);
-					unbreakableMethod.invoke(instance, unbreakable);
-				} catch (Exception exception) {
-					exception.printStackTrace();
-				}
-			}
-		});
-	}
+                    Object instance = instanceMethod.invoke(itemMeta);
+                    Method unbreakableMethod = instance.getClass().getMethod("setUnbreakable", boolean.class);
+                    unbreakableMethod.setAccessible(true);
+                    unbreakableMethod.invoke(instance, unbreakable);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }
+        });
+    }
 
-	public ItemBuilder hideTooltip(boolean hideToolTip) {
-		if (HIDE_TOOLTIP.isSkipped()) {
-			return this;
-		}
+    public ItemBuilder hideTooltip(boolean hideToolTip) {
+        if (HIDE_TOOLTIP.isSkipped()) {
+            return this;
+        }
 
-		return hideToolTip ? this.edit(itemMeta -> {
-			if (XReflection.supports(20, 5)) {
-				try {
-					Method getDefaultAttributeModifiers = Material.class.getMethod("getDefaultAttributeModifiers", EquipmentSlot.class);
-					getDefaultAttributeModifiers.setAccessible(true);
+        return hideToolTip ? this.edit(itemMeta -> {
+            if (XReflection.supports(20, 5)) {
+                try {
+                    Method getDefaultAttributeModifiers = Material.class.getMethod("getDefaultAttributeModifiers", EquipmentSlot.class);
+                    getDefaultAttributeModifiers.setAccessible(true);
 
-					Multimap<Attribute, AttributeModifier> defaultAttributes = (Multimap<Attribute, AttributeModifier>) getDefaultAttributeModifiers.invoke(itemStack.getType(), EquipmentSlot.HAND);
-					itemMeta.setAttributeModifiers(defaultAttributes);
-				} catch (Throwable exception) {
-					exception.printStackTrace();
-				}
-			}
+                    Multimap<Attribute, AttributeModifier> defaultAttributes = (Multimap<Attribute, AttributeModifier>) getDefaultAttributeModifiers.invoke(itemStack.getType(), EquipmentSlot.HAND);
+                    itemMeta.setAttributeModifiers(defaultAttributes);
+                } catch (Throwable exception) {
+                    exception.printStackTrace();
+                }
+            }
 
-			itemMeta.addItemFlags(ItemFlag.values());
-		}) : this;
-	}
+            itemMeta.addItemFlags(ItemFlag.values());
+        }) : this;
+    }
 
-	public ItemBuilder glow(boolean glow) {
-		if (GLOW.isSkipped()) {
-			return this;
-		}
+    public ItemBuilder glow(boolean glow) {
+        if (GLOW.isSkipped()) {
+            return this;
+        }
 
-		if (glow) {
-			return this.enchantment(XEnchantment.INFINITY.get(), 1).flag(ItemFlag.HIDE_ENCHANTS);
-		}
+        if (glow) {
+            return this.enchantment(XEnchantment.INFINITY.get(), 1).flag(ItemFlag.HIDE_ENCHANTS);
+        }
 
-		itemStack.removeEnchantment(XEnchantment.INFINITY.get());
-		return this;	
-	}
+        itemStack.removeEnchantment(XEnchantment.INFINITY.get());
+        return this;
+    }
 
-	public ItemStack build() {
-		return this.itemStack;
-	}
+    public ItemStack build() {
+        return this.itemStack;
+    }
 
-	private ItemBuilder edit(Consumer<ItemMeta> metaConsumer) {
-		final var itemMeta = this.itemStack.getItemMeta();
-		metaConsumer.accept(itemMeta);
+    private ItemBuilder edit(Consumer<ItemMeta> metaConsumer) {
+        final var itemMeta = this.itemStack.getItemMeta();
+        metaConsumer.accept(itemMeta);
 
-		this.itemStack.setItemMeta(itemMeta);
-		return this;
-	}
+        this.itemStack.setItemMeta(itemMeta);
+        return this;
+    }
 
-	ItemBuilder consume(Consumer<ItemBuilder> consumer) {
-		if (consumer != null) {
-			consumer.accept(this);
-		}
+    ItemBuilder consume(Consumer<ItemBuilder> consumer) {
+        if (consumer != null) {
+            consumer.accept(this);
+        }
 
-		return this;
-	}
+        return this;
+    }
 }

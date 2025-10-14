@@ -27,189 +27,189 @@ import static me.despical.fileitems.ItemOption.*;
  */
 public final class ItemManager {
 
-	private Consumer<ItemBuilder> builderConsumer;
+    private final JavaPlugin plugin;
+    private final Map<String, SpecialItem> items;
+    private final Map<String, Function<Object, Object>> customKeys;
+    private final Map<String, Map<String, SpecialItem>> categorizedItems;
+    private Consumer<ItemBuilder> builderConsumer;
 
-	private final JavaPlugin plugin;
-	private final Map<String, SpecialItem> items;
-	private final Map<String, Function<Object, Object>> customKeys;
-	private final Map<String, Map<String, SpecialItem>> categorizedItems;
+    public ItemManager(@NotNull JavaPlugin plugin) {
+        this(plugin, null);
+    }
 
-	public ItemManager(@NotNull JavaPlugin plugin) {
-		this(plugin, null);
-	}
+    public ItemManager(@NotNull JavaPlugin plugin, @Nullable Consumer<ItemManager> function) {
+        this.plugin = plugin;
+        this.items = new HashMap<>();
+        this.customKeys = new HashMap<>();
+        this.categorizedItems = new HashMap<>();
 
-	public ItemManager(@NotNull JavaPlugin plugin, @Nullable Consumer<ItemManager> function) {
-		this.plugin = plugin;
-		this.items = new HashMap<>();
-		this.customKeys = new HashMap<>();
-		this.categorizedItems = new HashMap<>();
+        Optional.ofNullable(function).ifPresent(consumer -> consumer.accept(this));
+    }
 
-		Optional.ofNullable(function).ifPresent(consumer -> consumer.accept(this));
-	}
+    public SpecialItem getItem(@NotNull String itemName) {
+        return items.get(itemName);
+    }
 
-	public SpecialItem getItem(@NotNull String itemName) {
-		return items.get(itemName);
-	}
+    public Collection<SpecialItem> getItems() {
+        return items.values();
+    }
 
-	public Collection<SpecialItem> getItems() {
-		return items.values();
-	}
+    public SpecialItem getItemFromCategory(@NotNull String categoryName, @NotNull String itemName) {
+        return categorizedItems.get(categoryName).get(itemName);
+    }
 
-	public SpecialItem getItemFromCategory(@NotNull String categoryName, @NotNull String itemName) {
-		return categorizedItems.get(categoryName).get(itemName);
-	}
+    public List<SpecialItem> getItemsFromCategory(@NotNull String categoryName) {
+        return List.copyOf(categorizedItems.get(categoryName).values());
+    }
 
-	public List<SpecialItem> getItemsFromCategory(@NotNull String categoryName) {
-		return List.copyOf(categorizedItems.get(categoryName).values());
-	}
+    public Optional<SpecialItem> findItem(@Nullable String itemName) {
+        return itemName == null ? Optional.empty() : Optional.ofNullable(items.get(itemName));
+    }
 
-	public Optional<SpecialItem> findItem(@Nullable String itemName) {
-		return itemName == null ? Optional.empty() : Optional.ofNullable(items.get(itemName));
-	}
+    public void addCustomKey(@NotNull String key) {
+        addCustomKey(key, UnaryOperator.identity());
+    }
 
-	public void addCustomKey(@NotNull String key) {
-		addCustomKey(key, UnaryOperator.identity());
-	}
+    public void addCustomKeys(@NotNull String... keys) {
+        for (String key : keys) {
+            addCustomKey(key);
+        }
+    }
 
-	public void addCustomKeys(@NotNull String... keys) {
-		for (String key : keys) {
-			addCustomKey(key);
-		}
-	}
+    public void addCustomKey(@NotNull String key, @NotNull Function<Object, Object> keyMapper) {
+        customKeys.put(key, keyMapper);
+    }
 
-	public void addCustomKey(@NotNull String key, @NotNull Function<Object, Object> keyMapper) {
-		customKeys.put(key, keyMapper);
-	}
+    public void editItemBuilder(Consumer<ItemBuilder> builderConsumer) {
+        this.builderConsumer = builderConsumer;
+    }
 
-	public void editItemBuilder(Consumer<ItemBuilder> builderConsumer) {
-		this.builderConsumer = builderConsumer;
-	}
+    public void registerItems(@NotNull String fileName, @NotNull String path) {
+        registerItems(path, ConfigUtils.getConfig(plugin, fileName));
+    }
 
-	public void registerItems(@NotNull String fileName, @NotNull String path) {
-		registerItems(path, ConfigUtils.getConfig(plugin, fileName));
-	}
+    public void registerItemsFromResources(@NotNull String fileName, @NotNull String path) {
+        registerItems(path, ConfigUtils.getConfigFromResources(plugin, fileName));
+    }
 
-	public void registerItemsFromResources(@NotNull String fileName, @NotNull String path) {
-		registerItems(path, ConfigUtils.getConfigFromResources(plugin, fileName));
-	}
+    public void registerItems(@NotNull String categoryName, @NotNull String path, String fileName) {
+        registerItems(categoryName, path, ConfigUtils.getConfig(plugin, fileName));
+    }
 
-	public void registerItems(@NotNull String categoryName, @NotNull String path, String fileName) {
-		registerItems(categoryName, path, ConfigUtils.getConfig(plugin, fileName));
-	}
+    public void registerItems(@NotNull String categoryName, @NotNull String path, FileConfiguration config) {
+        ConfigurationSection section = config.getConfigurationSection(path);
 
-	public void registerItems(@NotNull String categoryName, @NotNull String path, FileConfiguration config) {
-		ConfigurationSection section = config.getConfigurationSection(path);
+        if (section == null) {
+            throw new NullPointerException("No such configuration section exists!");
+        }
 
-		if (section == null) {
-			throw new NullPointerException("No such configuration section exists!");
-		}
+        categorizedItems.put(categoryName, getSectionItems(section));
+    }
 
-		categorizedItems.put(categoryName, getSectionItems(section));
-	}
+    public void registerItemsFromResources(@NotNull String categoryName, @NotNull String path, @NotNull String fileName) {
+        registerItems(categoryName, path, ConfigUtils.getConfigFromResources(plugin, fileName));
+    }
 
-	public void registerItemsFromResources(@NotNull String categoryName, @NotNull String path, @NotNull String fileName) {
-		registerItems(categoryName, path, ConfigUtils.getConfigFromResources(plugin, fileName));
-	}
+    private void registerItems(@NotNull String path, FileConfiguration config) {
+        ConfigurationSection section = config.getConfigurationSection(path);
 
-	private void registerItems(@NotNull String path, FileConfiguration config) {
-		ConfigurationSection section = config.getConfigurationSection(path);
+        if (section == null) {
+            throw new NullPointerException("No such configuration section exists!");
+        }
 
-		if (section == null) {
-			throw new NullPointerException("No such configuration section exists!");
-		}
+        items.putAll(getSectionItems(section));
+    }
 
-		items.putAll(getSectionItems(section));
-	}
+    private Map<String, SpecialItem> getSectionItems(@NotNull ConfigurationSection section) {
+        Map<String, SpecialItem> items = new LinkedHashMap<>();
 
-	private Map<String, SpecialItem> getSectionItems(@NotNull ConfigurationSection section) {
-		Map<String, SpecialItem> items = new LinkedHashMap<>();
+        for (String key : section.getKeys(false)) {
+            String materialName = section.getString(MATERIAL.getFormattedPath(key));
 
-		for (String key : section.getKeys(false)) {
-			String materialName = section.getString(MATERIAL.getFormattedPath(key));
+            if (materialName == null) {
+                continue;
+            }
 
-			if (materialName == null) {
-				continue;
-			}
+            ItemBuilder itemBuilder = this.createItemBuilder(materialName)
+                .name(section.getString(NAME.getFormattedPath(key)))
+                .amount(section.getInt(AMOUNT.getFormattedPath(key), 1))
+                .durability((short) section.getInt(DURABILITY.getFormattedPath(key)))
+                .data((byte) section.getInt(DATA.getFormattedPath(key)))
+                .unbreakable(section.getBoolean(UNBREAKABLE.getFormattedPath(key)))
+                .glow(section.getBoolean(GLOW.getFormattedPath(key)))
+                .hideTooltip(section.getBoolean(HIDE_TOOLTIP.getFormattedPath(key)))
+                .lore(section.getStringList(LORE.getFormattedPath(key)))
+                .flag(section.getStringList(ITEM_FLAGS.getFormattedPath(key))
+                    .stream()
+                    .map(ItemFlag::valueOf)
+                    .toArray(ItemFlag[]::new))
+                .consume(builderConsumer);
 
-			ItemBuilder itemBuilder = this.createItemBuilder(materialName)
-				.name(section.getString(NAME.getFormattedPath(key)))
-				.amount(section.getInt(AMOUNT.getFormattedPath(key), 1))
-				.durability((short) section.getInt(DURABILITY.getFormattedPath(key)))
-				.data((byte) section.getInt(DATA.getFormattedPath(key)))
-				.unbreakable(section.getBoolean(UNBREAKABLE.getFormattedPath(key)))
-				.glow(section.getBoolean(GLOW.getFormattedPath(key)))
-				.hideTooltip(section.getBoolean(HIDE_TOOLTIP.getFormattedPath(key)))
-				.lore(section.getStringList(LORE.getFormattedPath(key)))
-				.flag(section.getStringList(ITEM_FLAGS.getFormattedPath(key))
-					.stream()
-					.map(ItemFlag::valueOf)
-					.toArray(ItemFlag[]::new))
-				.consume(builderConsumer);
+            List<String> enchantments = section.getStringList(ENCHANTS.getFormattedPath(key));
+            for (String enchant : enchantments) {
+                String[] parts = enchant.split(" ");
 
-			List<String> enchantments = section.getStringList(ENCHANTS.getFormattedPath(key));
-			for (String enchant : enchantments) {
-				String[] parts = enchant.split(" ");
+                if (parts.length != 2) {
+                    throw new IllegalArgumentException("Invalid enchantment format. Expected 'name level'.");
+                }
 
-				if (parts.length != 2) {
-					throw new IllegalArgumentException("Invalid enchantment format. Expected 'name level'.");
-				}
+                String name = parts[0];
+                int level = Integer.parseInt(parts[1]);
 
-				String name = parts[0];
-				int level = Integer.parseInt(parts[1]);
+                Enchantment parsedEnchant = XEnchantment.of(name.toUpperCase(Locale.ROOT)).orElseThrow().get();
+                itemBuilder.enchantment(parsedEnchant, level);
+            }
 
-				Enchantment parsedEnchant = XEnchantment.of(name.toUpperCase(Locale.ROOT)).orElseThrow().get();
-				itemBuilder.enchantment(parsedEnchant, level);
-			}
+            SpecialItem item = new SpecialItem(itemBuilder.build());
 
-			SpecialItem item = new SpecialItem(itemBuilder.build());
+            custom_keys:
+            {
+                if (CUSTOM_KEYS.isSkipped()) {
+                    break custom_keys;
+                }
 
-			custom_keys: {
-				if (CUSTOM_KEYS.isSkipped()) {
-					break custom_keys;
-				}
+                for (var entry : customKeys.entrySet()) {
+                    String entryKey = entry.getKey();
+                    String path = "%s.%s".formatted(key, entryKey);
 
-				for (var entry : customKeys.entrySet()) {
-					String entryKey = entry.getKey();
-					String path = "%s.%s".formatted(key, entryKey);
+                    if (!section.isSet(path)) continue;
 
-					if (!section.isSet(path)) continue;
+                    Object value = section.get(path);
 
-					Object value = section.get(path);
+                    item.addCustomKey(entryKey, entry.getValue().apply(value));
+                }
+            }
 
-					item.addCustomKey(entryKey, entry.getValue().apply(value));
-				}
-			}
+            items.put(key, item);
+        }
 
-			items.put(key, item);
-		}
+        return items;
+    }
 
-		return items;
-	}
+    @NotNull
+    private ItemBuilder createItemBuilder(String materialName) {
+        boolean oraxenEnabled = plugin.getServer().getPluginManager().isPluginEnabled("Oraxen");
 
-	@NotNull
-	private ItemBuilder createItemBuilder(String materialName) {
-		boolean oraxenEnabled = plugin.getServer().getPluginManager().isPluginEnabled("Oraxen");
+        if (!oraxenEnabled) {
+            ItemStack itemStack = XMaterial.matchXMaterial(materialName).orElseThrow().parseItem();
+            return new ItemBuilder(itemStack);
+        }
 
-		if (!oraxenEnabled) {
-			ItemStack itemStack = XMaterial.matchXMaterial(materialName).orElseThrow().parseItem();
-			return new ItemBuilder(itemStack);
-		}
+        String identifier = ORAXEN.getPath();
 
-		String identifier = ORAXEN.getPath();
+        if (!materialName.startsWith(identifier)) {
+            ItemStack itemStack = XMaterial.matchXMaterial(materialName).orElseThrow().parseItem();
+            return new ItemBuilder(itemStack);
+        }
 
-		if (!materialName.startsWith(identifier)) {
-			ItemStack itemStack = XMaterial.matchXMaterial(materialName).orElseThrow().parseItem();
-			return new ItemBuilder(itemStack);
-		}
+        materialName = materialName.substring(identifier.length());
 
-		materialName = materialName.substring(identifier.length());
+        var itemBuilder = OraxenItems.getItemById(materialName);
 
-		var itemBuilder = OraxenItems.getItemById(materialName);
+        if (itemBuilder == null) {
+            throw new NullPointerException("We could not find an item called '%s' using the Oraxen API!".formatted(materialName));
+        }
 
-		if (itemBuilder == null) {
-			throw new NullPointerException("We could not find an item called '%s' using the Oraxen API!".formatted(materialName));
-		}
-
-		return new ItemBuilder(itemBuilder.build());
-	}
+        return new ItemBuilder(itemBuilder.build());
+    }
 }
