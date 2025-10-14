@@ -13,7 +13,6 @@ hidden tooltips, amounts, lore, data, durability, unbreakable item flags, and cu
 </div>
 
 ## Documentation
-- [Wiki](https://github.com/Despical/FileItems/wiki)
 - [Javadocs](https://despical.github.io/FileItems)
 - [Maven Central](https://repo1.maven.org/maven2/com/github/despical/file-items)
 - [Sonatype Central](https://central.sonatype.com/artifact/com.github.despical/file-items)
