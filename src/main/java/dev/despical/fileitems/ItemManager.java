@@ -1,9 +1,9 @@
-package me.despical.fileitems;
+package dev.despical.fileitems;
 
+import dev.despical.commons.XEnchantment;
+import dev.despical.commons.XMaterial;
+import dev.despical.commons.configuration.ConfigUtils;
 import io.th0rgal.oraxen.api.OraxenItems;
-import me.despical.commons.XEnchantment;
-import me.despical.commons.XMaterial;
-import me.despical.commons.configuration.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import static me.despical.fileitems.ItemOption.*;
+import static dev.despical.fileitems.ItemOption.*;
 
 /**
  * @author Despical

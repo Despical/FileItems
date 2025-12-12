@@ -3,7 +3,7 @@
 <div align="center">
 
 [![](https://github.com/Despical/FileItems/actions/workflows/build.yml/badge.svg)](https://github.com/Despical/FileItems/actions/workflows/build.yml)
-[![](https://img.shields.io/maven-central/v/com.github.despical/file-items.svg?label=Maven%20Central)](https://repo1.maven.org/maven2/com/github/despical/file-items)
+[![](https://img.shields.io/maven-central/v/dev.despical/file-items.svg?label=Maven%20Central)](https://repo1.maven.org/maven2/dev/despical/file-items)
 [![](https://img.shields.io/badge/License-GPLv3-blue.svg)](../LICENSE)
 [![](https://img.shields.io/badge/Javadoc-latest-blue.svg)](https://despical.github.io/FileItems)
 
@@ -14,8 +14,8 @@ hidden tooltips, amounts, lore, data, durability, unbreakable item flags, and cu
 
 ## Documentation
 - [Javadocs](https://despical.github.io/FileItems)
-- [Maven Central](https://repo1.maven.org/maven2/com/github/despical/file-items)
-- [Sonatype Central](https://central.sonatype.com/artifact/com.github.despical/file-items)
+- [Maven Central](https://repo1.maven.org/maven2/dev/despical/file-items)
+- [Sonatype Central](https://central.sonatype.com/artifact/dev.despical/file-items)
 
 ## Donations
 - [Patreon](https://www.patreon.com/despical)
@@ -27,16 +27,16 @@ To add this project as a dependency to your project, add the following to your p
 ### Maven
 ```xml
 <dependency>
-    <groupId>com.github.despical</groupId>
+    <groupId>dev.despical</groupId>
     <artifactId>file-items</artifactId>
-    <version>1.1.9</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
 ### Gradle dependency
 ```gradle
 dependencies {
-    implementation 'com.github.despical:file-items:1.1.9'
+    implementation 'dev.despical:file-items:1.2.0'
 }
 ```
 

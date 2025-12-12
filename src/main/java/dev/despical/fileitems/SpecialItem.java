@@ -1,4 +1,4 @@
-package me.despical.fileitems;
+package dev.despical.fileitems;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

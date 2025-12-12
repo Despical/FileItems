@@ -1,8 +1,8 @@
-package me.despical.fileitems;
+package dev.despical.fileitems;
 
 import com.google.common.collect.Multimap;
-import me.despical.commons.XEnchantment;
-import me.despical.commons.reflection.XReflection;
+import dev.despical.commons.XEnchantment;
+import dev.despical.commons.reflection.XReflection;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import static me.despical.fileitems.ItemOption.*;
+import static dev.despical.fileitems.ItemOption.*;
 
 /**
  * @author Despical

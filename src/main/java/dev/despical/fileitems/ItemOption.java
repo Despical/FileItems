@@ -1,6 +1,6 @@
-package me.despical.fileitems;
+package dev.despical.fileitems;
 
-import me.despical.commons.util.Strings;
+import dev.despical.commons.util.Strings;
 
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
