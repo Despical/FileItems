@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.logging.Level;
 
 import static dev.despical.fileitems.ItemOption.*;
 
@@ -127,6 +128,7 @@ public final class ItemManager {
             String materialName = section.getString(MATERIAL.getFormattedPath(key));
 
             if (materialName == null) {
+                plugin.getLogger().log(Level.WARNING, "Special item ''{0}'' does not define a 'material' field and was skipped.", key);
                 continue;
             }
 
