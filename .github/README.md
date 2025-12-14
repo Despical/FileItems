@@ -29,14 +29,14 @@ To add this project as a dependency to your project, add the following to your p
 <dependency>
     <groupId>dev.despical</groupId>
     <artifactId>file-items</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 </dependency>
 ```
 
 ### Gradle dependency
 ```gradle
 dependencies {
-    implementation 'dev.despical:file-items:1.2.0'
+    implementation 'dev.despical:file-items:1.2.1'
 }
 ```
 
