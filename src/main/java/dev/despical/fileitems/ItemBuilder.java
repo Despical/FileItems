@@ -108,6 +108,15 @@ public final class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder customModelData(int data) {
+        if (CUSTOM_MODEL_DATA.isSkipped()) {
+            return this;
+        }
+
+        edit(meta -> meta.setCustomModelData(data));
+        return this;
+    }
+
     public ItemBuilder unbreakable(boolean unbreakable) {
         if (UNBREAKABLE.isSkipped()) {
             return this;

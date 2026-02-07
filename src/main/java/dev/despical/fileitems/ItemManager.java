@@ -24,7 +24,6 @@ import dev.despical.commons.configuration.ConfigUtils;
 import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,8 +32,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 
 import static dev.despical.fileitems.ItemOption.*;
@@ -48,19 +45,16 @@ public final class ItemManager {
 
     private final JavaPlugin plugin;
     private final Map<String, SpecialItem> items;
-    private final Map<String, Function<Object, Object>> customKeys;
     private final Map<String, Map<String, SpecialItem>> categorizedItems;
     private Consumer<ItemBuilder> builderConsumer;
 
     public ItemManager(@NotNull JavaPlugin plugin) {
-        this(plugin, manager -> {
-        });
+        this(plugin, manager -> {});
     }
 
     public ItemManager(@NotNull JavaPlugin plugin, @NotNull Consumer<ItemManager> function) {
         this.plugin = plugin;
         this.items = new HashMap<>();
-        this.customKeys = new HashMap<>();
         this.categorizedItems = new HashMap<>();
 
         function.accept(this);
@@ -84,20 +78,6 @@ public final class ItemManager {
 
     public Optional<SpecialItem> findItem(@Nullable String itemName) {
         return itemName == null ? Optional.empty() : Optional.ofNullable(items.get(itemName));
-    }
-
-    public void addCustomKey(@NotNull String key) {
-        addCustomKey(key, UnaryOperator.identity());
-    }
-
-    public void addCustomKeys(@NotNull String... keys) {
-        for (String key : keys) {
-            addCustomKey(key);
-        }
-    }
-
-    public void addCustomKey(@NotNull String key, @NotNull Function<Object, Object> keyMapper) {
-        customKeys.put(key, keyMapper);
     }
 
     public void editItemBuilder(Consumer<ItemBuilder> builderConsumer) {
@@ -157,6 +137,7 @@ public final class ItemManager {
                 .durability((short) section.getInt(DURABILITY.getFormattedPath(key)))
                 .data((byte) section.getInt(DATA.getFormattedPath(key)))
                 .unbreakable(section.getBoolean(UNBREAKABLE.getFormattedPath(key)))
+                .customModelData(section.getInt(CUSTOM_MODEL_DATA.getFormattedPath(key)))
                 .glow(section.getBoolean(GLOW.getFormattedPath(key)))
                 .hideTooltip(section.getBoolean(HIDE_TOOLTIP.getFormattedPath(key)))
                 .lore(section.getStringList(LORE.getFormattedPath(key)))
@@ -171,33 +152,28 @@ public final class ItemManager {
                 String[] parts = enchant.split(" ");
 
                 if (parts.length != 2) {
-                    throw new IllegalArgumentException("Invalid enchantment format. Expected 'name level'.");
+                    throw new IllegalArgumentException("Invalid enchantment format inside " + key + ". Expected 'name level'.");
                 }
 
                 String name = parts[0];
                 int level = Integer.parseInt(parts[1]);
 
-                Enchantment parsedEnchant = XEnchantment.of(name.toUpperCase(Locale.ROOT)).orElseThrow().get();
-                itemBuilder.enchantment(parsedEnchant, level);
+                XEnchantment.of(name.toUpperCase(Locale.ROOT)).ifPresent(xEnch ->
+                    itemBuilder.enchantment(xEnch.get(), level)
+                );
             }
 
             SpecialItem item = new SpecialItem(itemBuilder.build());
 
-            custom_keys:
-            {
-                if (CUSTOM_KEYS.isSkipped()) {
-                    break custom_keys;
-                }
+            if (section.isConfigurationSection(key)) {
+                ConfigurationSection itemSection = section.getConfigurationSection(key);
 
-                for (var entry : customKeys.entrySet()) {
-                    String entryKey = entry.getKey();
-                    String path = "%s.%s".formatted(key, entryKey);
-
-                    if (!section.isSet(path)) continue;
-
-                    Object value = section.get(path);
-
-                    item.addCustomKey(entryKey, entry.getValue().apply(value));
+                for (String currentKey : itemSection.getKeys(false)) {
+                    if (itemSection.isConfigurationSection(currentKey)) {
+                        flattenAndAddCustomKeys(currentKey, itemSection.getConfigurationSection(currentKey), item);
+                    } else {
+                        item.addCustomKey(currentKey, itemSection.get(currentKey));
+                    }
                 }
             }
 
@@ -205,6 +181,18 @@ public final class ItemManager {
         }
 
         return items;
+    }
+
+    private void flattenAndAddCustomKeys(String parentPath, ConfigurationSection section, SpecialItem item) {
+        for (String key : section.getKeys(false)) {
+            String fullPath = parentPath + "." + key;
+
+            if (section.isConfigurationSection(key)) {
+                flattenAndAddCustomKeys(fullPath, section.getConfigurationSection(key), item);
+            } else {
+                item.addCustomKey(fullPath, section.get(key));
+            }
+        }
     }
 
     @NotNull
