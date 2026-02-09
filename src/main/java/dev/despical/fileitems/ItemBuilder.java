@@ -21,6 +21,8 @@ package dev.despical.fileitems;
 import com.google.common.collect.Multimap;
 import dev.despical.commons.XEnchantment;
 import dev.despical.commons.reflection.XReflection;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -33,6 +35,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static dev.despical.fileitems.ItemOption.*;
 
@@ -44,9 +47,15 @@ import static dev.despical.fileitems.ItemOption.*;
 public final class ItemBuilder {
 
     private final ItemStack itemStack;
+    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
     ItemBuilder(ItemStack itemStack) {
-        this.itemStack = itemStack;
+        this.itemStack = itemStack.clone();
+    }
+
+    private Component parseMiniMessage(String text) {
+        if (text == null || text.isEmpty()) return Component.empty();
+        return MINI_MESSAGE.deserialize("<italic:false>" + text);
     }
 
     public ItemBuilder name(String displayName) {
@@ -54,7 +63,7 @@ public final class ItemBuilder {
             return this;
         }
 
-        return this.edit(itemMeta -> itemMeta.setDisplayName(ItemOption.formatColors(displayName)));
+        return this.edit(itemMeta -> itemMeta.displayName(parseMiniMessage(displayName)));
     }
 
     public ItemBuilder lore(Collection<String> lore) {
@@ -62,10 +71,21 @@ public final class ItemBuilder {
             return this;
         }
 
-        return this.edit(itemMeta -> itemMeta.setLore(lore
-            .stream()
-            .map(ItemOption::formatColors)
-            .toList()));
+        return this.edit(itemMeta -> itemMeta.lore(lore.stream()
+            .map(this::parseMiniMessage)
+            .collect(Collectors.toList())));
+    }
+
+    public ItemBuilder customModelData(int data) {
+        if (CUSTOM_MODEL_DATA.isSkipped()) {
+            return this;
+        }
+
+        if (XReflection.supports(14)) {
+            edit(meta -> meta.setCustomModelData(data));
+        }
+
+        return this;
     }
 
     public ItemBuilder data(byte data) {
@@ -78,10 +98,7 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder amount(int amount) {
-        if (AMOUNT.isSkipped()) {
-            return this;
-        }
-
+        if (AMOUNT.isSkipped()) return this;
         this.itemStack.setAmount(amount);
         return this;
     }
@@ -92,35 +109,18 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder flag(ItemFlag... itemFlags) {
-        if (ITEM_FLAGS.isSkipped()) {
-            return this;
-        }
-
+        if (ITEM_FLAGS.isSkipped()) return this;
         return this.edit(itemMeta -> itemMeta.addItemFlags(itemFlags));
     }
 
     public ItemBuilder durability(short durability) {
-        if (DURABILITY.isSkipped()) {
-            return this;
-        }
-
+        if (DURABILITY.isSkipped()) return this;
         itemStack.setDurability(durability);
         return this;
     }
 
-    public ItemBuilder customModelData(int data) {
-        if (CUSTOM_MODEL_DATA.isSkipped()) {
-            return this;
-        }
-
-        edit(meta -> meta.setCustomModelData(data));
-        return this;
-    }
-
     public ItemBuilder unbreakable(boolean unbreakable) {
-        if (UNBREAKABLE.isSkipped()) {
-            return this;
-        }
+        if (UNBREAKABLE.isSkipped()) return this;
 
         return this.edit(itemMeta -> {
             if (XReflection.supports(9)) {
@@ -142,9 +142,7 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder hideTooltip(boolean hideToolTip) {
-        if (HIDE_TOOLTIP.isSkipped()) {
-            return this;
-        }
+        if (HIDE_TOOLTIP.isSkipped()) return this;
 
         return hideToolTip ? this.edit(itemMeta -> {
             if (XReflection.supports(20, 5)) {
@@ -171,7 +169,6 @@ public final class ItemBuilder {
         if (glow) {
             return this.enchantment(XEnchantment.INFINITY.get(), 1).flag(ItemFlag.HIDE_ENCHANTS);
         }
-
         itemStack.removeEnchantment(XEnchantment.INFINITY.get());
         return this;
     }
@@ -182,17 +179,15 @@ public final class ItemBuilder {
 
     private ItemBuilder edit(Consumer<ItemMeta> metaConsumer) {
         final var itemMeta = this.itemStack.getItemMeta();
-        metaConsumer.accept(itemMeta);
-
-        this.itemStack.setItemMeta(itemMeta);
+        if (itemMeta != null) {
+            metaConsumer.accept(itemMeta);
+            this.itemStack.setItemMeta(itemMeta);
+        }
         return this;
     }
 
     ItemBuilder consume(Consumer<ItemBuilder> consumer) {
-        if (consumer != null) {
-            consumer.accept(this);
-        }
-
+        if (consumer != null) consumer.accept(this);
         return this;
     }
 }
