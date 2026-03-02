@@ -36,27 +36,58 @@ import java.util.Optional;
  */
 public final class SpecialItem {
 
+    private final String key;
     private final ItemStack itemStack;
     private final Map<String, Object> customKeys;
 
-    SpecialItem(ItemStack itemStack) {
+    SpecialItem(String key, ItemStack itemStack) {
+        this.key = key;
         this.itemStack = itemStack;
         this.customKeys = new HashMap<>();
     }
 
+    /**
+     * Retrieves a clone of the underlying {@code ItemStack}.
+     * <p>
+     * Modifying the returned stack will not affect the stored item.
+     *
+     * @return a clone of the stored {@code ItemStack}
+     */
     @NotNull
     public ItemStack getItemStack() {
         return itemStack.clone();
     }
 
+    /**
+     * Retrieves the original underlying {@code ItemStack}.
+     * <p>
+     * <b>Note:</b> Modifying this stack will directly affect the stored item.
+     *
+     * @return the original {@code ItemStack}
+     */
     @NotNull
     public ItemStack getOriginalItemStack() {
         return itemStack;
     }
 
+    /**
+     * Creates a new {@code ItemBuilder} initialized with this item's stack.
+     *
+     * @return a new {@code ItemBuilder} wrapping the item stack
+     */
     @NotNull
     public ItemBuilder asItemBuilder() {
         return new ItemBuilder(itemStack);
+    }
+
+    /**
+     * Gets the unique key identifier for this special item.
+     *
+     * @return the unique key string
+     */
+    @NotNull
+    public String getKey() {
+        return key;
     }
 
     /**
@@ -98,15 +129,36 @@ public final class SpecialItem {
         return (T) customKeys.get(key);
     }
 
+    /**
+     * Returns an {@code Optional} containing the value mapped to the specified key,
+     * or an empty {@code Optional} if no mapping exists.
+     *
+     * @param key the key whose associated value is to be returned
+     * @param <T> the type to cast the value to
+     * @return an {@code Optional} containing the value, or empty if not found
+     */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> findCustomKey(@NotNull String key) {
         return Optional.ofNullable((T) customKeys.get(key));
     }
 
+    /**
+     * Associates the specified value with the specified key in the custom keys map.
+     *
+     * @param key   the key with which the specified value is to be associated
+     * @param value the value to be associated with the specified key
+     */
     void addCustomKey(String key, Object value) {
         customKeys.put(key, value);
     }
 
+    /**
+     * Checks if a Bukkit {@code ItemStack} matches this SpecialItem based on
+     * material type, display name, and lore.
+     *
+     * @param item the {@code ItemStack} to compare
+     * @return {@code true} if the item matches this SpecialItem's metadata, {@code false} otherwise
+     */
     public boolean equals(@Nullable ItemStack item) {
         if (item == null) return false;
 

@@ -43,10 +43,11 @@ import static dev.despical.fileitems.ItemOption.*;
  */
 public final class ItemManager {
 
+    private Consumer<ItemBuilder> builderConsumer;
+
     private final JavaPlugin plugin;
     private final Map<String, SpecialItem> items;
     private final Map<String, Map<String, SpecialItem>> categorizedItems;
-    private Consumer<ItemBuilder> builderConsumer;
 
     public ItemManager(@NotNull JavaPlugin plugin) {
         this(plugin, manager -> {});
@@ -163,7 +164,7 @@ public final class ItemManager {
                 );
             }
 
-            SpecialItem item = new SpecialItem(itemBuilder.build());
+            SpecialItem item = new SpecialItem(key, itemBuilder.build());
 
             if (section.isConfigurationSection(key)) {
                 ConfigurationSection itemSection = section.getConfigurationSection(key);
