@@ -20,7 +20,6 @@ package dev.despical.fileitems;
 
 import com.google.common.collect.Multimap;
 import dev.despical.commons.XEnchantment;
-import dev.despical.commons.reflection.XReflection;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
@@ -48,6 +47,9 @@ public final class ItemBuilder {
 
     private final ItemStack itemStack;
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+    private static final boolean SUPPORTS_CUSTOM_MODEL_DATA = hasMethod(ItemMeta.class, "setCustomModelData", Integer.class);
+    private static final boolean SUPPORTS_UNBREAKABLE = hasMethod(ItemMeta.class, "setUnbreakable", boolean.class);
+    private static final boolean SUPPORTS_DEFAULT_ATTRIBUTE_MODIFIERS = hasMethod(Material.class, "getDefaultAttributeModifiers", EquipmentSlot.class);
 
     ItemBuilder(ItemStack itemStack) {
         this.itemStack = itemStack.clone();
@@ -81,7 +83,7 @@ public final class ItemBuilder {
             return this;
         }
 
-        if (XReflection.supports(14)) {
+        if (SUPPORTS_CUSTOM_MODEL_DATA) {
             edit(meta -> meta.setCustomModelData(data));
         }
 
@@ -123,7 +125,7 @@ public final class ItemBuilder {
         if (UNBREAKABLE.isSkipped()) return this;
 
         return this.edit(itemMeta -> {
-            if (XReflection.supports(9)) {
+            if (SUPPORTS_UNBREAKABLE) {
                 itemMeta.setUnbreakable(unbreakable);
             } else {
                 try {
@@ -145,7 +147,7 @@ public final class ItemBuilder {
         if (HIDE_TOOLTIP.isSkipped()) return this;
 
         return hideToolTip ? this.edit(itemMeta -> {
-            if (XReflection.supports(20, 5)) {
+            if (SUPPORTS_DEFAULT_ATTRIBUTE_MODIFIERS) {
                 try {
                     Method getDefaultAttributeModifiers = Material.class.getMethod("getDefaultAttributeModifiers", EquipmentSlot.class);
                     getDefaultAttributeModifiers.setAccessible(true);
@@ -169,6 +171,7 @@ public final class ItemBuilder {
         if (glow) {
             return this.enchantment(XEnchantment.INFINITY.get(), 1).flag(ItemFlag.HIDE_ENCHANTS);
         }
+        
         itemStack.removeEnchantment(XEnchantment.INFINITY.get());
         return this;
     }
@@ -179,15 +182,26 @@ public final class ItemBuilder {
 
     private ItemBuilder edit(Consumer<ItemMeta> metaConsumer) {
         final var itemMeta = this.itemStack.getItemMeta();
+        
         if (itemMeta != null) {
             metaConsumer.accept(itemMeta);
             this.itemStack.setItemMeta(itemMeta);
         }
+
         return this;
     }
 
     ItemBuilder consume(Consumer<ItemBuilder> consumer) {
         if (consumer != null) consumer.accept(this);
         return this;
+    }
+
+    private static boolean hasMethod(Class<?> type, String methodName, Class<?>... parameterTypes) {
+        try {
+            type.getMethod(methodName, parameterTypes);
+            return true;
+        } catch (NoSuchMethodException exception) {
+            return false;
+        }
     }
 }
