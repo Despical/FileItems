@@ -5,7 +5,7 @@
 [![](https://github.com/Despical/FileItems/actions/workflows/build.yml/badge.svg)](https://github.com/Despical/FileItems/actions/workflows/build.yml)
 [![](https://img.shields.io/maven-central/v/dev.despical/file-items.svg?label=Maven%20Central)](https://repo1.maven.org/maven2/dev/despical/file-items)
 [![](https://img.shields.io/badge/License-GPLv3-blue.svg)](../LICENSE)
-[![](https://img.shields.io/badge/Javadoc-latest-blue.svg)](https://despical.github.io/FileItems)
+[![](https://img.shields.io/badge/Javadoc-latest-blue.svg)](https://javadoc.despical.dev/file-items)
 
 File Items is a very lightweight library that helps loading items with customizable features, such as display names, glowing effects,
 hidden tooltips, amounts, lore, data, durability, unbreakable item flags, and custom keys from a YAML file.
@@ -13,7 +13,7 @@ hidden tooltips, amounts, lore, data, durability, unbreakable item flags, and cu
 </div>
 
 ## Documentation
-- [Javadocs](https://despical.github.io/FileItems)
+- [Javadocs](https://javadoc.despical.dev/file-items)
 - [Maven Central](https://repo1.maven.org/maven2/dev/despical/file-items)
 - [Sonatype Central](https://central.sonatype.com/artifact/dev.despical/file-items)
 
@@ -64,11 +64,11 @@ public class ExamplePlugin extends JavaPlugin {
 ```yaml
 game-items:
   leave-item:
-    name: "&c&lReturn to Lobby &7(Right Click)"
+    name: "<red><bold>Return to Lobby <gray><bold>(Right Click)"
     material: RED_BED
     slot: 8
     lore:
-      - "&7Right-click to leave to the lobby!"
+      - "<gray>Right-click to leave to the lobby!"
 ```
 
 ## License
